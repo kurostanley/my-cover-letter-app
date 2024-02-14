@@ -2,6 +2,7 @@
 
 # dependencies
 **/node_modules
+../client/public/preset.json
 /.pnp
 .pnp.js
 
