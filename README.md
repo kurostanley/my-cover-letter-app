@@ -29,7 +29,7 @@ This is a cover letter generator application developed using React and Node.js. 
 
 ## Contributors
 
-- Please list all contributors here.
+- Shin Ting Lin
 
 ## Issues and Feedback
 
