@@ -15,6 +15,7 @@ const CoverLetterGenerator = () => {
   const [cvReference, setCvReference] = useState('');
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load presets from local JSON file when component mounts
   useEffect(() => {
@@ -60,7 +61,14 @@ const CoverLetterGenerator = () => {
 
   const generateCoverLetter = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/generate-cover-letter', {
+      const apiKey = localStorage.getItem('openaiApiKey');
+      if (!apiKey) {
+        alert('請先設置 OpenAI API 密鑰');
+        return;
+      }
+
+      setIsLoading(true);
+      const response = await axios.post('https://cover-letter-app-237142443924.asia-east1.run.app/generate-cover-letter', {
         summary,
         skills,
         experience,
@@ -68,16 +76,16 @@ const CoverLetterGenerator = () => {
         education,
         jobTitle,
         jobDescription,
+        companyProducts,
         cvReference,
-        companyProducts
+        apiKey
       });
-      const coverLetter = response.data.coverLetter.content;
-      console.log(coverLetter);
-      setGeneratedCoverLetter(coverLetter);
-      await copyToClipboard();
-      saveAsPDF(coverLetter); // Call the function to save as PDF after generating
+      setGeneratedCoverLetter(response.data.coverLetter.content);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error generating cover letter:', error);
+      setIsLoading(false);
+      alert('生成求職信時發生錯誤，請確保已設置有效的 API 密鑰');
     }
   };
 
