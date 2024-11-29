@@ -25,22 +25,25 @@ https://cover-letter-app-237142443924.asia-east1.run.app
 ### Installation
 
 1. Clone the repository:
-   bash
+   ```
    git clone https://github.com/kurostanley/cover-letter-generator.git
+   ```
 2. Install dependencies:
-   bash
-   Install backend dependencies
+   ```
+   //Install backend dependencies
    cd api
    npm install
-   Install frontend dependencies
+   //Install frontend dependencies
    cd ../client
    npm install
+   ```
 3. Start the development servers:
-   bash
-   Start backend server (from api directory)
+   ```
+   //Start backend server (from api directory)
    npm start
-   Start frontend server (from client directory)
+   //Start frontend server (from client directory)
    npm start
+   ```
 
 ## Usage Guide
 
