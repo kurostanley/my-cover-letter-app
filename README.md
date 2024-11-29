@@ -1,40 +1,93 @@
-# Cover Letter Generator
+# AI Cover Letter Generator
 
-This is a cover letter generator application developed using React and Node.js. The application allows users to quickly generate cover letters personalized based on their provided summary, skills, experience, education, as well as the job description and company products.
+An AI-powered web application that generates personalized cover letters by analyzing your professional profile and job descriptions. Built with React and Node.js, deployed on Google Cloud Platform.
 
-## Key Features
+## Live Demo
 
-- Users can fill in their summary, skills, experience, and education information.
-- Users can input the job description and company products.
-- Users can generate personalized cover letters.
-- Integration with the OpenAI API, utilizing the GPT-3.5 model for cover letter generation.
+https://cover-letter-app-237142443924.asia-east1.run.app
+
+## Features
+
+- **AI-Powered Generation**: Leverages OpenAI's GPT-3.5 model for intelligent cover letter creation
+- **Preset Management**: Save and manage multiple professional profiles
+- **Customizable Templates**: Flexible prompt templates for different writing styles
+- **Real-Time Generation**: Instant cover letter creation with live preview
+- **Local Storage**: Securely stores your presets and settings locally
+- **Responsive Design**: Works seamlessly on both desktop and mobile devices
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- OpenAI API key
+
+### Installation
+
+1. Clone the repository:
+   bash
+   git clone https://github.com/kurostanley/cover-letter-generator.git
+2. Install dependencies:
+   bash
+   Install backend dependencies
+   cd api
+   npm install
+   Install frontend dependencies
+   cd ../client
+   npm install
+3. Start the development servers:
+   bash
+   Start backend server (from api directory)
+   npm start
+   Start frontend server (from client directory)
+   npm start
+
+## Usage Guide
+
+1. **API Setup**
+
+   - Get an OpenAI API key from [OpenAI's website](https://platform.openai.com/api-keys)
+   - Enter your API key in the API Settings page
+
+2. **Create Preset**
+
+   - Fill in your professional information
+   - Include name, summary, skills, experience, and education
+   - Save the preset for future use
+
+3. **Generate Cover Letter**
+   - Select a saved preset
+   - Enter the job title and description
+   - Click "Generate" to create your cover letter
+   - Review and copy the generated content
 
 ## Tech Stack
 
-- Frontend: React
-- Backend: Node.js, Express
+### Frontend
+
+- React.js
+- React Router DOM
+- Axios
+- CSS3
+
+### Backend
+
+- Node.js
+- Express
 - OpenAI API
 
-## Development Setup
+### Deployment
 
-1. Clone this repository to your local environment.
-2. Run `npm install` in both the `client` and `api` directories to install dependencies.
-3. Create a `.env` file in the root directory and input your OpenAI API key.
+- Google Cloud Platform (Cloud Run)
 
-## How to Use
+## Author
 
-1. Start the backend server: Run `npm start` in the `api` directory.
-2. Start the frontend application: Run `npm start` in the `client` directory.
-3. Access the application in your browser at `http://localhost:3000`.
+Shin Ting Lin
 
-## Contributors
-
-- Shin Ting Lin
-
-## Issues and Feedback
-
-If you encounter any issues or have any suggestions, please raise an issue or submit a pull request on GitHub.
+- GitHub: [@kurostanley](https://github.com/kurostanley)
+- LinkedIn: [Shin Ting Lin](https://www.linkedin.com/in/john-peatey-a36630192/)
+- Instagram: [@stl_oopig](https://www.instagram.com/stl_oopig/)
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License
