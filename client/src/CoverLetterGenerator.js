@@ -1,162 +1,144 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { jsPDF } from 'jspdf';
 
 const CoverLetterGenerator = () => {
-  const [summary, setSummary] = useState('');
-  const [skills, setSkills] = useState('');
-  const [experience, setExperience] = useState('');
-  const [workexperience, setWorkExperience] = useState('');
-  const [education, setEducation] = useState('');
+  const [presets, setPresets] = useState([]);
+  const [selectedPresetId, setSelectedPresetId] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobDescription, setJobDescription] = useState('');
-  const [companyProducts, setCompanyProducts] = useState('');
   const [generatedCoverLetter, setGeneratedCoverLetter] = useState('');
-  const [cvReference, setCvReference] = useState('');
-  const [presets, setPresets] = useState([]);
-  const [selectedPreset, setSelectedPreset] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load presets from local JSON file when component mounts
+  // Load presets from localStorage
   useEffect(() => {
-    const fetchPresets = async () => {
-      try {
-        const response = await fetch('./preset.json');
-        const data = await response.json();
-        setPresets(data.presets);
-      } catch (error) {
-        console.error('Error loading presets:', error);
+    const loadPresets = () => {
+      const savedPresets = localStorage.getItem('coverLetterPresets');
+      if (savedPresets) {
+        setPresets(JSON.parse(savedPresets));
       }
     };
 
-    fetchPresets();
+    loadPresets();
+    // Add event listener to detect localStorage changes
+    window.addEventListener('storage', loadPresets);
+    
+    return () => {
+      window.removeEventListener('storage', loadPresets);
+    };
   }, []);
 
-  const savePreset = () => {
-    const newPreset = {
-      summary,
-      skills,
-      experience,
-      workexperience,
-      education,
-      jobTitle,
-      jobDescription,
-      cvReference,
-      companyProducts
-    };
-    setPresets([...presets, newPreset]);
-  };
-
-  const loadPreset = (preset) => {
-    setSummary(preset.summary);
-    setSkills(preset.skills);
-    setExperience(preset.experience);
-    setWorkExperience(preset.workexperience);
-    setEducation(preset.education);
-    setJobTitle(preset.jobTitle);
-    setJobDescription(preset.jobDescription);
-    setCvReference(preset.cvReference)
-    setCompanyProducts(preset.companyProducts);
-  };
-
   const generateCoverLetter = async () => {
+    if (!selectedPresetId) {
+      alert('Please select a preset template');
+      return;
+    }
+
+    if (!jobTitle.trim() || !jobDescription.trim()) {
+      alert('Please fill in both job title and job description');
+      return;
+    }
+
+    const selectedPreset = presets.find(preset => preset.name === selectedPresetId);
+    if (!selectedPreset) {
+      alert('Selected preset template not found');
+      return;
+    }
+
+    setIsLoading(true);
     try {
+      const apiKey = localStorage.getItem('openaiApiKey');
+      if (!apiKey) {
+        alert('Please set your OpenAI API Key in the API Settings page first');
+        return;
+      }
+
       const response = await axios.post('http://localhost:3001/generate-cover-letter', {
-        summary,
-        skills,
-        experience,
-        workexperience,
-        education,
+        ...selectedPreset.data,
         jobTitle,
         jobDescription,
-        cvReference,
-        companyProducts
+        apiKey
       });
-      const coverLetter = response.data.coverLetter.content;
-      console.log(coverLetter);
-      setGeneratedCoverLetter(coverLetter);
-      await copyToClipboard();
-      saveAsPDF(coverLetter); // Call the function to save as PDF after generating
+      
+      setGeneratedCoverLetter(response.data.coverLetter);
     } catch (error) {
       console.error('Error generating cover letter:', error);
+      alert('Error generating cover letter: ' + (error.response?.data?.error || error.message));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const copyToClipboard = async() => {
-    navigator.clipboard.writeText(generatedCoverLetter)
-      .then(() => {})
-      .catch((error) => console.error('Error copying to clipboard:', error));
-  };
-
-  const saveAsPDF = (content) => {
-    const doc = new jsPDF();
-
-    // Add blank lines at the top for spacing
-    const lineHeight = 10;
-    const numLines = 2; // Adjust the number of lines as needed
-    const blankLines = Array(numLines).fill('').join('\n');
-    doc.text(blankLines, 10, 10);
-
-    // Split the content into lines
-    const lines = doc.splitTextToSize(content, 180);
-
-    // Add the lines to the PDF
-    doc.text(lines, 10, 10 + lineHeight * numLines);
-
-    doc.save(`Shin Ting Lin_${jobTitle}cover_letter.pdf`); // Save the PDF file with a specified name
-  };
-
-
   return (
-    <div>
-      <div>
-        {/* 輸入摘要、技能、經驗、教育等信息 */}
-        {/* 範例： */}
-        <label>Summary</label>
-        <textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Summary" />
-        <label>Skills</label>
-        <textarea value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="Skills" />
-        <label>Project Experience</label>
-        <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Experience" />
-        <label>Work Experience</label>
-        <textarea value={workexperience} onChange={(e) => setWorkExperience(e.target.value)} placeholder="WorkExperience" />
-        <label>Education</label>
-        <textarea value={education} onChange={(e) => setEducation(e.target.value)} placeholder="Education" />
-      </div>
-      <div>
-        <label>Job Title</label>
-        <textarea value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="Job Title" />
-        <label>Job Description</label>
-        <textarea value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} placeholder="Job Description" />
-        <label>Company Products</label>
-        <textarea value={companyProducts} onChange={(e) => setCompanyProducts(e.target.value)} placeholder="Company Products" />
-      </div>
-      <div>
-        <label>CV reference</label>
-        <textarea value={cvReference} onChange={(e) => setCvReference(e.target.value)} placeholder="CvReference" />
-      </div>
-      <button onClick={generateCoverLetter}>Generate Cover Letter</button>
-      <button onClick={savePreset}>Save Preset</button>
-      <select onChange={(e) => {
-        setSelectedPreset(e.target.value);
-        loadPreset(JSON.parse(e.target.value));
-      }}>
-        <option value="">Select Preset</option>
-        {presets.map((preset, index) => (
-          <option key={index} value={JSON.stringify(preset)}>Preset {index + 1}</option>
-        ))}
-      </select>
-      <button onClick={copyToClipboard}>Copy to Clipboard</button>
-      <div>
-        {/* Display the generated cover letter */}
+    <div className="cover-letter-generator">
+      <h2>Cover Letter Generator</h2>
+      
+      <div className="main-form">
+        <div className="form-group">
+          <label>Select Preset Template:</label>
+          <select 
+            value={selectedPresetId} 
+            onChange={(e) => setSelectedPresetId(e.target.value)}
+          >
+            <option value="">Choose a preset template</option>
+            {presets.map((preset) => (
+              <option key={preset.name} value={preset.name}>
+                {preset.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Job Title:</label>
+          <input
+            type="text"
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            placeholder="Enter the job title you're applying for"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Job Description:</label>
+          <textarea
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+            placeholder="Paste the job description here"
+          />
+        </div>
+
+        <button 
+          onClick={generateCoverLetter}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Generating...' : 'Generate Cover Letter'}
+        </button>
+
+        {selectedPresetId && (
+          <div className="selected-preset-info">
+            <h4>Selected Template Information:</h4>
+            <p>{presets.find(p => p.name === selectedPresetId)?.name}</p>
+          </div>
+        )}
+
         {generatedCoverLetter && (
-          <div>
-            <h2>Generated Cover Letter:</h2>
+          <div className="generated-content">
+            <h3>Generated Cover Letter:</h3>
             <textarea
               value={generatedCoverLetter}
-              rows="10" cols="50"
               readOnly
-              style={{ resize: 'none' }}
+              rows="10"
             />
+            <div className="button-group">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedCoverLetter);
+                  alert('Copied to clipboard!');
+                }}
+              >
+                Copy Content
+              </button>
+            </div>
           </div>
         )}
       </div>
