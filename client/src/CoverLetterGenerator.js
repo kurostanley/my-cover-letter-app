@@ -47,16 +47,19 @@ const CoverLetterGenerator = () => {
     setIsLoading(true);
     try {
       const apiKey = localStorage.getItem('openaiApiKey');
+      const promptTemplate = localStorage.getItem('promptTemplate');
+      
       if (!apiKey) {
         alert('Please set your OpenAI API Key in the API Settings page first');
         return;
       }
 
-      const response = await axios.post('http://localhost:3001/generate-cover-letter', {
+      const response = await axios.post('https://cover-letter-app-237142443924.asia-east1.run.app/generate-cover-letter', {
         ...selectedPreset.data,
         jobTitle,
         jobDescription,
-        apiKey
+        apiKey,
+        promptTemplate
       });
       
       setGeneratedCoverLetter(response.data.coverLetter);

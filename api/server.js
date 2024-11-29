@@ -4,12 +4,30 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const OpenAI = require("openai");
 require('dotenv').config();
+const path = require('path');
 
 const app = express();
-const port = 3001;
+const port = parseInt(process.env.PORT) || 8080;
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://cover-letter-app-237142443924.asia-east1.run.app'],
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(bodyParser.json());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Serve index.html for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Default prompt template
 const DEFAULT_PROMPT_TEMPLATE = 
