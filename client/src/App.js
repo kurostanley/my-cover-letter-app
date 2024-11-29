@@ -3,6 +3,7 @@ import CoverLetterGenerator from './CoverLetterGenerator';
 import PresetManager from './PresetManager';
 import ApiSettings from './ApiSettings';
 import UserGuide from './UserGuide';
+import AboutAuthor from './AboutAuthor';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             <li><Link to="/presets">Preset Manager</Link></li>
             <li><Link to="/settings">API Settings</Link></li>
             <li><Link to="/guide">User Guide</Link></li>
+            <li><Link to="/about">About Author</Link></li>
           </ul>
         </nav>
 
@@ -23,6 +25,7 @@ function App() {
           <Route path="/presets" element={<PresetManager />} />
           <Route path="/settings" element={<ApiSettings />} />
           <Route path="/guide" element={<UserGuide />} />
+          <Route path="/about" element={<AboutAuthor />} />
         </Routes>
       </div>
     </Router>
